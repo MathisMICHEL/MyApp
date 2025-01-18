@@ -3,8 +3,9 @@ It is downloaded using 'To_Tflite.py' script
 
 Link to the cloud firebase have been sent on uniroma mail the 18/01
 
-The different sensors used are luminosity, accelerometer sensors and camera
 
+
+The different sensors used are luminosity, accelerometer sensors and camera
 
 UI
 Luminosity and accelerometer data are updating in real time and displayed using 2D graphs

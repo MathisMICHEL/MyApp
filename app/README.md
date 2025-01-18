@@ -1,7 +1,7 @@
 mobilenet_V2 is stored in 'assets/mobilenet_v2.tflite'
 It is downloaded using 'To_Tflite.py' script
 
-
+Link to the cloud firebase have been sent on uniroma mail the 18/01
 
 The different sensors used are luminosity, accelerometer sensors and camera
 

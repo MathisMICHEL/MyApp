@@ -210,8 +210,6 @@ class MainActivity : ComponentActivity() {
                     val document = querySnapshot.documents.first()
                     val entityName = document.getString("entity")
                     callback(entityName)
-                    if (entityName != null) {
-                    }
                 } else {
                     callback(null)
                 }

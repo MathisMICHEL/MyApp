@@ -3,6 +3,7 @@ package com.example.myapp
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,6 +34,7 @@ import java.util.Locale
 
 class MainActivity : ComponentActivity() {
 
+
     private lateinit var cameraHandler: CameraHandler
     private lateinit var accelerometerHandler: AccelerometerHandler
     private val accelerometerValues = mutableStateOf(Triple(0f, 0f, 0f))
@@ -44,6 +46,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var previewView: PreviewView
 
     private var showAuthenticationScreen by mutableStateOf(false)
+    private var entitySummary by mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +101,8 @@ class MainActivity : ComponentActivity() {
                     },
                     onAuthenticateClick = {
                         showAuthenticationScreen = true
-                    }
+                    },
+                    entitySummary = entitySummary
                 )
             }
         }
@@ -175,15 +179,27 @@ class MainActivity : ComponentActivity() {
 
         fetchEntityFromFirestore(maxIndex) { entityName ->
             if (entityName != null) {
-                Toast.makeText(this, "Entity detected: $entityName", Toast.LENGTH_LONG).show()
-
+                val entityis = entityName.split(",").first().trim()
+                fetchWikipediaSummary(entityis) { summary ->
+                    val processedSummary = processSummary(summary)
+                    Log.d("entityname",entityis)
+                    Log.d("summary",summary)
+                    runOnUiThread {
+                        entitySummary = processedSummary
+                    }
+                }
             } else {
-                Toast.makeText(this,"No entity found",Toast.LENGTH_SHORT).show()
+                runOnUiThread {
+                    entitySummary = "No entity found"
+                }
             }
         }
 
         savePredictionData(maxIndex)
     }
+
+
+
 
     private fun fetchEntityFromFirestore(maxIndex: Int, callback: (String?) -> Unit) {
         Firebase.firestore.collection("entity")
@@ -194,6 +210,8 @@ class MainActivity : ComponentActivity() {
                     val document = querySnapshot.documents.first()
                     val entityName = document.getString("entity")
                     callback(entityName)
+                    if (entityName != null) {
+                    }
                 } else {
                     callback(null)
                 }

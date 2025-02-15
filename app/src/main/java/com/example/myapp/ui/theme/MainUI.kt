@@ -12,6 +12,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun MainUI(
@@ -19,7 +20,8 @@ fun MainUI(
     luminosityValue: Float,
     cameraPreview: @Composable () -> Unit,
     onCaptureClick: () -> Unit,
-    onAuthenticateClick: () -> Unit
+    onAuthenticateClick: () -> Unit,
+    entitySummary: String?
 ) {
     Column(
         modifier = Modifier
@@ -114,14 +116,25 @@ fun MainUI(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
-            cameraPreview()
+        // Display summary or camera preview
+        if (!entitySummary.isNullOrEmpty()) {
+            // Show Wikipedia summary
+            Text(
+                text = entitySummary,
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp)
+            )
+        } else {
+            // Show camera preview when no summary is available
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                cameraPreview()
+            }
         }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 

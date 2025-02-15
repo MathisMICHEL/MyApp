@@ -1,11 +1,24 @@
 package com.example.myapp.ui.theme
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -28,11 +41,10 @@ fun MainUI(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Accelerometer and Graph
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp),
+                .height(50.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -49,7 +61,7 @@ fun MainUI(
             Canvas(
                 modifier = Modifier
                     .weight(1f)
-                    .size(150.dp)
+                    .size(50.dp)
             ) {
                 val canvasWidth = size.width
                 val canvasHeight = size.height
@@ -116,16 +128,14 @@ fun MainUI(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Display summary or camera preview
-        if (!entitySummary.isNullOrEmpty()) {
-            // Show Wikipedia summary
+        var buttonHandler by remember { mutableIntStateOf(0) }
+        if (!entitySummary.isNullOrEmpty() && buttonHandler == 1) {
             Text(
                 text = entitySummary,
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp)
             )
         } else {
-            // Show camera preview when no summary is available
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -135,6 +145,15 @@ fun MainUI(
             }
         }
 
+        Button(
+            onClick = { buttonHandler = 0 },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text("Show Camera Preview")
+        }
+
+
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -143,7 +162,10 @@ fun MainUI(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(
-                onClick = onCaptureClick,
+                onClick = {
+                    buttonHandler = 1
+                    onCaptureClick()
+                },
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 8.dp)

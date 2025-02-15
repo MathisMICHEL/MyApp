@@ -3,7 +3,7 @@ package com.example.myapp
 import java.net.HttpURLConnection
 import java.net.URL
 
-// Function to fetch Wikipedia summary in a background thread
+
 fun fetchWikipediaSummary(entityName: String, onResult: (String) -> Unit) {
     val urlString = "https://mathismichel.pythonanywhere.com/wiki?entity=$entityName"
 
@@ -20,7 +20,6 @@ fun fetchWikipediaSummary(entityName: String, onResult: (String) -> Unit) {
                 val inputStream = connection.inputStream
                 val response = inputStream.bufferedReader().use { it.readText() }
 
-                // Return the summary back to the caller (onResult)
                 onResult(response)
             } else {
                 onResult("Failed to fetch summary")
@@ -32,7 +31,7 @@ fun fetchWikipediaSummary(entityName: String, onResult: (String) -> Unit) {
 }
 
 fun processSummary(summary: String): String {
-    return summary.substring(10,summary.length-14)
+    return summary.substring(11,summary.length-2)
         .replace(Regex("""\\n([a-zA-Z])"""), " $1")
         .replace("\n", " ")
         .replace(Regex("""\[\d+]"""), "")
@@ -40,4 +39,5 @@ fun processSummary(summary: String): String {
         .replace("\"", "")
         .replace(Regex("""\s+"""), " ")
         .trim()
+        .take(1100)
 }

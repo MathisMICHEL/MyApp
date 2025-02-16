@@ -1,24 +1,11 @@
 package com.example.myapp.ui.theme
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -36,6 +23,8 @@ fun MainUI(
     onAuthenticateClick: () -> Unit,
     entitySummary: String?
 ) {
+    var isImageCaptured by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -44,7 +33,7 @@ fun MainUI(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp),
+                .height(70.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -63,33 +52,17 @@ fun MainUI(
                     .weight(1f)
                     .size(50.dp)
             ) {
-                val canvasWidth = size.width
-                val canvasHeight = size.height
-                val centerX = canvasWidth / 2
-                val centerY = canvasHeight / 2
+                val centerX = size.width / 2
+                val centerY = size.height / 2
                 val scale = 20f
 
-                drawLine(
-                    color = Color.Gray,
-                    start = Offset(0f, centerY),
-                    end = Offset(canvasWidth, centerY),
-                    strokeWidth = 2f
-                )
-                drawLine(
-                    color = Color.Gray,
-                    start = Offset(centerX, 0f),
-                    end = Offset(centerX, canvasHeight),
-                    strokeWidth = 2f
-                )
+                drawLine(Color.Gray, Offset(0f, centerY), Offset(size.width, centerY), strokeWidth = 2f)
+                drawLine(Color.Gray, Offset(centerX, 0f), Offset(centerX, size.height), strokeWidth = 2f)
 
                 val circleX = centerX + accelerometerValues.first * scale
                 val circleY = centerY - accelerometerValues.second * scale
 
-                drawCircle(
-                    color = Color.Blue,
-                    radius = 10f,
-                    center = Offset(circleX, circleY)
-                )
+                drawCircle(Color.Blue, radius = 10f, center = Offset(circleX, circleY))
             }
         }
 
@@ -98,29 +71,14 @@ fun MainUI(
         Column(modifier = Modifier.fillMaxWidth()) {
             Text("Luminosity: $luminosityValue lux")
             Canvas(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
+                modifier = Modifier.fillMaxWidth().height(30.dp)
             ) {
                 val normalizedLuminosity = (luminosityValue / 500f).coerceIn(0f, 1f)
                 val barWidth = size.width * normalizedLuminosity
 
-                val gradient = Brush.horizontalGradient(
-                    colors = listOf(Color.Blue, Color.Green, Color.Yellow),
-                    startX = 0f,
-                    endX = size.width
-                )
-
                 drawRoundRect(
-                    brush = gradient,
+                    brush = Brush.horizontalGradient(colors = listOf(Color.Blue, Color.Green, Color.Yellow)),
                     size = androidx.compose.ui.geometry.Size(barWidth, size.height),
-                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(16f, 16f)
-                )
-
-                drawRoundRect(
-                    color = Color.Black,
-                    size = size,
-                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2f),
                     cornerRadius = androidx.compose.ui.geometry.CornerRadius(16f, 16f)
                 )
             }
@@ -128,8 +86,7 @@ fun MainUI(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        var buttonHandler by remember { mutableIntStateOf(0) }
-        if (!entitySummary.isNullOrEmpty() && buttonHandler == 1) {
+        if (!entitySummary.isNullOrEmpty() && isImageCaptured) {
             Text(
                 text = entitySummary,
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -144,47 +101,44 @@ fun MainUI(
                 cameraPreview()
             }
         }
-
-        Button(
-            onClick = { buttonHandler = 0 },
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text("Show Camera Preview")
-        }
-
-
-
-
         Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
+        if (!isImageCaptured) {
             Button(
                 onClick = {
-                    buttonHandler = 1
+                    isImageCaptured = true
                     onCaptureClick()
                 },
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth()
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
             ) {
                 Text("Capture", color = Color.White)
             }
-
+        } else {
             Button(
-                onClick = onAuthenticateClick,
+                onClick = {
+                    isImageCaptured = false
+                },
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth()
                     .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
             ) {
-                Text("Authenticate", color = Color.White)
+                Text("Show Camera Preview", color = Color.White)
             }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = onAuthenticateClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+        ) {
+            Text("Authenticate", color = Color.White)
         }
     }
 }

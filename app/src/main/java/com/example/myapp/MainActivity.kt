@@ -91,6 +91,7 @@ class MainActivity : ComponentActivity() {
                         AndroidView(factory = { previewView })
                     },
                     onCaptureClick = {
+                        entitySummary = null
                         cameraHandler.captureImage { imagePath ->
                             val byteBuffer = processImageForInference(imagePath)
                             val outputArray = runInference(byteBuffer)
